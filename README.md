@@ -1,11 +1,11 @@
-# Bolt HTTP Client - Tauri App
+# Pigeon
 
 A modern, fast HTTP client (like Postman/Insomnia) built with Tauri for native performance.
 
 ## Project Structure
 
 ```
-bolt-tauri/
+pigeon/
 ├── package.json          # Node dependencies (Tauri CLI)
 ├── src/                  # Frontend (HTML/CSS/JS)
 │   ├── index.html        # Main UI
@@ -58,7 +58,6 @@ sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev
 
 ### Development
 ```bash
-cd ~/clawd/bolt-tauri
 npm install
 npm run dev
 ```
@@ -70,7 +69,7 @@ npm run build
 
 Outputs:
 - Linux: `.deb`, `.AppImage` in `src-tauri/target/release/bundle/`
-- Windows: `.msi`, `.exe` (cross-compile or build on Windows)
+- Windows: `.msi`, `.exe`
 - macOS: `.dmg`, `.app`
 
 ## Why Tauri?
@@ -79,11 +78,6 @@ Outputs:
 - **Native performance** (Rust backend)
 - **Low memory** (~50MB vs 300MB+ Electron)
 - **System webview** (no bundled Chromium)
-
-## Related Projects
-
-- `~/clawd/http-client` - Web-only version (Node.js server)
-- `~/clawd/markdown-editor` - Electron markdown editor
 
 ## Customization
 
