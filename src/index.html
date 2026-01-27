@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pigeon - HTTP Client</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <i class="fas fa-dove"></i>
+          <span>Pigeon</span>
+        </div>
+        <div class="header-actions">
+          <button class="btn-icon" id="importBtn" title="Import Collection">
+            <i class="fas fa-file-import"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="sidebar-section">
+        <div class="section-header">
+          <span>Collections</span>
+          <button class="btn-icon" id="newCollectionBtn" title="New Collection">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+        <div class="collections-list" id="collectionsList">
+          <div class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <p>No collections yet</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-header">
+          <span>History</span>
+          <button class="btn-icon" id="clearHistoryBtn" title="Clear History">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Request Tabs Bar -->
+      <div class="request-tabs-bar">
+        <div class="request-tabs" id="requestTabs">
+          <!-- Tabs will be rendered here -->
+        </div>
+        <button class="new-tab-btn" id="newTabBtn" title="New Tab (Ctrl/Cmd+T)">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+
+      <!-- Top Bar with Environment -->
+      <div class="top-bar">
+        <div class="env-selector">
+          <i class="fas fa-globe"></i>
+          <select id="envSelect"></select>
+          <button class="btn-icon" id="manageEnvBtn" title="Manage Environments (⌘/Ctrl+E to toggle)">
+            <i class="fas fa-cog"></i>
+          </button>
+        </div>
+        <div class="top-actions">
+          <button class="btn-sm" id="cookieManagerBtn">
+            <i class="fas fa-cookie-bite"></i> Cookies
+          </button>
+          <button class="btn-sm" id="generateCodeBtn">
+            <i class="fas fa-code"></i> Code
+          </button>
+        </div>
+      </div>
+
+      <!-- Request Builder -->
+      <div class="request-builder">
+        <div class="url-bar">
+          <select id="methodSelect" class="method-select">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="PATCH">PATCH</option>
+            <option value="DELETE">DELETE</option>
+            <option value="HEAD">HEAD</option>
+            <option value="OPTIONS">OPTIONS</option>
+          </select>
+          <input type="text" id="urlInput" class="url-input" placeholder="Enter URL (use {{variable}} for env vars)" value="https://jsonplaceholder.typicode.com/posts/1" title="URL Input (⌘/Ctrl+L to focus)">
+          <button id="sendBtn" class="send-btn" type="button" title="Send Request (⌘/Ctrl+Enter)">
+            <i class="fas fa-paper-plane"></i>
+            Send
+            <span class="shortcut-hint">⌘↵</span>
+          </button>
+        </div>
+
+        <!-- Request Tabs -->
+        <div class="tabs-container">
+          <div class="tabs">
+            <button class="tab active" data-tab="params" type="button">Params</button>
+            <button class="tab" data-tab="headers" type="button">Headers</button>
+            <button class="tab" data-tab="body" type="button">Body</button>
+            <button class="tab" data-tab="auth" type="button">Auth</button>
+            <button class="tab" data-tab="scripts" type="button">Scripts</button>
+          </div>
+
+          <div class="tab-content active" id="params-tab">
+            <div class="key-value-editor" id="paramsEditor">
+              <div class="kv-toolbar">
+                <button class="btn-xs" id="bulkEditParamsBtn" type="button">Bulk Edit</button>
+              </div>
+              <div class="kv-header">
+                <span></span>
+                <span>Key</span>
+                <span>Value</span>
+                <span></span>
+              </div>
+              <div class="kv-rows" id="paramsRows"></div>
+              <button class="add-row-btn" id="addParamBtn" type="button">
+                <i class="fas fa-plus"></i> Add Parameter
+              </button>
+            </div>
+          </div>
+
+          <div class="tab-content" id="headers-tab">
+            <div class="key-value-editor" id="headersEditor">
+              <div class="kv-toolbar">
+                <button class="btn-xs" id="bulkEditHeadersBtn" type="button">Bulk Edit</button>
+              </div>
+              <div class="kv-header">
+                <span></span>
+                <span>Key</span>
+                <span>Value</span>
+                <span></span>
+              </div>
+              <div class="kv-rows" id="headersRows"></div>
+              <button class="add-row-btn" id="addHeaderBtn" type="button">
+                <i class="fas fa-plus"></i> Add Header
+              </button>
+            </div>
+          </div>
+
+          <div class="tab-content" id="body-tab">
+            <div class="body-type-selector">
+              <label><input type="radio" name="bodyType" value="none" checked> None</label>
+              <label><input type="radio" name="bodyType" value="json"> JSON</label>
+              <label><input type="radio" name="bodyType" value="text"> Text</label>
+              <label><input type="radio" name="bodyType" value="form"> Form URL</label>
+              <label><input type="radio" name="bodyType" value="formdata"> Form Data</label>
+              <label><input type="radio" name="bodyType" value="graphql"> GraphQL</label>
+            </div>
+            <div class="body-editor" id="bodyEditorText">
+              <textarea id="bodyInput" placeholder='{"key": "value"}'></textarea>
+            </div>
+            <div class="body-editor formdata-editor" id="bodyEditorFormData" style="display: none;">
+              <div class="formdata-header">
+                <span></span>
+                <span>Key</span>
+                <span>Value</span>
+                <span>Type</span>
+                <span></span>
+              </div>
+              <div class="formdata-rows" id="formDataRows"></div>
+              <button class="add-row-btn" id="addFormDataBtn" type="button">
+                <i class="fas fa-plus"></i> Add Field
+              </button>
+            </div>
+          </div>
+
+          <div class="tab-content" id="auth-tab">
+            <div class="auth-selector">
+              <select id="authType">
+                <option value="none">No Auth</option>
+                <option value="bearer">Bearer Token</option>
+                <option value="basic">Basic Auth</option>
+                <option value="apikey">API Key</option>
+                <option value="oauth2">OAuth 2.0</option>
+              </select>
+            </div>
+            <div class="auth-fields" id="authFields"></div>
+          </div>
+
+          <div class="tab-content" id="scripts-tab">
+            <div class="scripts-editor">
+              <div class="script-section">
+                <h4><i class="fas fa-play"></i> Pre-request Script</h4>
+                <p class="script-help">Runs before the request. Use <code>bx.setEnv('key', 'value')</code> to set variables.</p>
+                <textarea id="preScriptInput" placeholder="// Example: bx.setEnv('timestamp', bx.timestamp())"></textarea>
+              </div>
+              <div class="script-section">
+                <h4><i class="fas fa-check-circle"></i> Tests</h4>
+                <p class="script-help">Validate responses. Use <code>bx.test('name', () => { ... })</code></p>
+                <textarea id="testScriptInput" placeholder="// Example:
+bx.test('Status is 200', () => {
+  bx.expect(bx.response.status).toBe(200);
+});
+
+bx.test('Has data', () => {
+  const json = bx.response.json();
+  bx.expect(json.id).toBeTruthy();
+});"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Response Panel -->
+      <div class="response-panel">
+        <div class="response-header">
+          <div class="response-title">Response</div>
+          <div class="response-meta">
+            <span class="status" id="responseStatus"></span>
+            <span class="time" id="responseTime"></span>
+            <span class="size" id="responseSize"></span>
+          </div>
+        </div>
+
+        <div class="response-tabs tabs">
+          <button class="tab active" data-response-tab="body" type="button">Body</button>
+          <button class="tab" data-response-tab="headers" type="button">Headers</button>
+          <button class="tab" data-response-tab="cookies" type="button">Cookies</button>
+          <button class="tab" data-response-tab="timing" type="button">Timing</button>
+          <button class="tab" data-response-tab="console" type="button">
+            Console
+            <span class="console-badge" id="consoleBadge" style="display:none;">0</span>
+          </button>
+        </div>
+
+        <div class="response-content">
+          <div class="response-tab-content active" id="response-body-tab">
+            <div class="response-toolbar">
+              <div class="preview-mode-toggle">
+                <button class="mode-btn active" data-mode="pretty" title="Pretty (formatted)" type="button">Pretty</button>
+                <button class="mode-btn" data-mode="raw" title="Raw (plain text)" type="button">Raw</button>
+                <button class="mode-btn" data-mode="preview" title="Preview (HTML render)" type="button">Preview</button>
+              </div>
+              <div class="toolbar-spacer"></div>
+              <button class="btn-icon" id="formatBtn" title="Format JSON" type="button">
+                <i class="fas fa-magic"></i>
+              </button>
+              <button class="btn-icon" id="copyBtn" title="Copy Response" type="button">
+                <i class="fas fa-copy"></i>
+              </button>
+              <button class="btn-icon" id="wrapBtn" title="Toggle Word Wrap" type="button">
+                <i class="fas fa-align-left"></i>
+              </button>
+              <button class="btn-icon" id="searchResponseBtn" title="Search" type="button">
+                <i class="fas fa-search"></i>
+              </button>
+              <button class="btn-icon" id="saveResponseBtn" title="Save Response to File" type="button">
+                <i class="fas fa-download"></i>
+              </button>
+            </div>
+            <pre id="responseBody" class="response-body"><span class="placeholder">Send a request to see the response</span></pre>
+            <iframe id="responsePreview" class="response-preview" sandbox="allow-same-origin" style="display: none;"></iframe>
+          </div>
+          <div class="response-tab-content" id="response-headers-tab">
+            <div class="headers-table" id="responseHeaders"></div>
+          </div>
+          <div class="response-tab-content" id="response-cookies-tab">
+            <div class="cookies-table" id="responseCookies">
+              <div class="empty-state"><i class="fas fa-cookie"></i><p>No cookies</p></div>
+            </div>
+          </div>
+          <div class="response-tab-content" id="response-console-tab">
+            <div class="console-toolbar">
+              <button class="btn-icon" id="clearConsoleBtn" title="Clear Console" type="button">
+                <i class="fas fa-ban"></i>
+              </button>
+              <span class="console-stats" id="consoleStats"></span>
+            </div>
+            <div class="console-output" id="consoleOutput">
+              <div class="empty-state"><i class="fas fa-terminal"></i><p>No console output yet</p><p class="hint">Use console.log(), console.warn(), or console.error() in your scripts</p></div>
+            </div>
+          </div>
+          <div class="response-tab-content" id="response-timing-tab">
+            <div class="timing-breakdown">
+              <div class="timing-header">
+                <span>Request Timing Breakdown</span>
+                <span class="timing-total" id="timingTotal">Total: 0ms</span>
+              </div>
+              <div class="timing-chart" id="timingChart">
+                <div class="empty-state"><i class="fas fa-stopwatch"></i><p>Send a request to see timing breakdown</p></div>
+              </div>
+              <div class="timing-details" id="timingDetails"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Collection Runner Modal -->
+  <div class="modal-overlay" id="collectionRunnerModal" style="display: none;">
+    <div class="modal runner-modal">
+      <div class="modal-header">
+        <h3><i class="fas fa-play-circle"></i> Collection Runner</h3>
+        <button class="btn-icon close-modal" id="closeRunnerModal"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <!-- Runner Config -->
+        <div class="runner-config" id="runnerConfig">
+          <div class="runner-collection-name" id="runnerCollectionName"></div>
+          
+          <div class="runner-settings">
+            <div class="runner-setting">
+              <label>Iterations</label>
+              <input type="number" id="runnerIterations" min="1" max="100" value="1">
+            </div>
+            <div class="runner-setting">
+              <label>Delay (ms)</label>
+              <input type="number" id="runnerDelay" min="0" max="10000" value="0" step="100">
+            </div>
+            <div class="runner-setting">
+              <label>Environment</label>
+              <select id="runnerEnvSelect"></select>
+            </div>
+          </div>
+
+          <div class="runner-requests-header">
+            <span>Requests to run</span>
+            <div class="runner-select-all">
+              <input type="checkbox" id="runnerSelectAll" checked>
+              <label for="runnerSelectAll">Select All</label>
+            </div>
+          </div>
+          <div class="runner-requests-list" id="runnerRequestsList"></div>
+
+          <div class="runner-actions">
+            <button class="btn runner-start-btn" id="runnerStartBtn">
+              <i class="fas fa-play"></i> Run Collection
+            </button>
+          </div>
+        </div>
+
+        <!-- Runner Progress -->
+        <div class="runner-progress" id="runnerProgress" style="display: none;">
+          <div class="runner-progress-header">
+            <span id="runnerProgressText">Running...</span>
+            <button class="btn btn-stop" id="runnerStopBtn">
+              <i class="fas fa-stop"></i> Stop
+            </button>
+          </div>
+          
+          <div class="runner-progress-bar">
+            <div class="runner-progress-fill" id="runnerProgressFill"></div>
+          </div>
+          
+          <div class="runner-stats">
+            <span class="runner-stat passed"><i class="fas fa-check"></i> <span id="runnerPassed">0</span> passed</span>
+            <span class="runner-stat failed"><i class="fas fa-times"></i> <span id="runnerFailed">0</span> failed</span>
+            <span class="runner-stat skipped"><i class="fas fa-forward"></i> <span id="runnerSkipped">0</span> skipped</span>
+          </div>
+
+          <div class="runner-current" id="runnerCurrent"></div>
+        </div>
+
+        <!-- Runner Results -->
+        <div class="runner-results" id="runnerResults" style="display: none;">
+          <div class="runner-results-header">
+            <h4>Results Summary</h4>
+            <div class="runner-results-actions">
+              <button class="btn-sm" id="runnerExportBtn">
+                <i class="fas fa-download"></i> Export JSON
+              </button>
+              <button class="btn-sm" id="runnerRunAgainBtn">
+                <i class="fas fa-redo"></i> Run Again
+              </button>
+            </div>
+          </div>
+          
+          <div class="runner-results-summary" id="runnerResultsSummary"></div>
+          
+          <div class="runner-results-table-container">
+            <table class="runner-results-table">
+              <thead>
+                <tr>
+                  <th>Request</th>
+                  <th>Status</th>
+                  <th>Time</th>
+                  <th>Tests</th>
+                </tr>
+              </thead>
+              <tbody id="runnerResultsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

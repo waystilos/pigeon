@@ -1,0 +1,75 @@
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.lnk
+
+.vscode/
+.idea/
+*.swp
+
+# =========================
+# Node / JS tooling
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+dist/
+dist-ssr/
+.cache/
+.parcel-cache/
+.next/
+out/
+.nuxt/
+.svelte-kit/
+coverage/
+*.tsbuildinfo
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# =========================
+# Rust / Cargo
+# =========================
+src-tauri/target/
+target/
+**/target/
+Cargo.lock
+# ^ If this is an application (not a library), you may prefer to COMMIT Cargo.lock.
+#   In that case, remove Cargo.lock from .gitignore.
+
+# Rust tooling
+**/*.rs.bk
+
+# =========================
+# Tauri
+# =========================
+# Tauri generates build artifacts into target/, but some toolchains create these too:
+src-tauri/target/
+src-tauri/gen/
+
+# If you use bundling/signing that generates local files, keep them out:
+# (Adjust to your project if these exist)
+src-tauri/icons/*.icns
+src-tauri/icons/*.ico
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# Local tooling / temp
+# =========================
+tmp/
+temp/
+*.tmp
+*.bak
