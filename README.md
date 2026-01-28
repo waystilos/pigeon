@@ -13,27 +13,6 @@ I wanted a lightweight client that opens fast, uses little memory, and still fee
 - Keyboard shortcut: Enter to send
 - Dark theme UI
 
-## Tech stack
-- Frontend: Vanilla HTML/CSS/JS
-- Backend: Rust + Tauri 2.x
-- HTTP: reqwest (async)
-
-## Project structure
-```
-pigeon/
-├── package.json
-├── src/
-│   ├── index.html
-│   ├── styles.css
-│   └── app.js
-└── src-tauri/
-    ├── Cargo.toml
-    ├── tauri.conf.json
-    └── src/
-        ├── main.rs
-        └── lib.rs
-```
-
 ## Getting started
 ### Prereqs
 - Node.js 18+
