@@ -1,98 +1,70 @@
 # Pigeon
 
-A modern, fast HTTP client (like Postman/Insomnia) built with Tauri for native performance.
+Pigeon is a fast, native-feeling HTTP client (think Postman/Insomnia) built with Tauri. It’s focused on the basics: make requests quickly, inspect responses clearly, and stay out of your way.
 
-## Project Structure
-
-```
-pigeon/
-├── package.json          # Node dependencies (Tauri CLI)
-├── src/                  # Frontend (HTML/CSS/JS)
-│   ├── index.html        # Main UI
-│   ├── styles.css        # Dark theme styling
-│   └── app.js           # Frontend logic (Tauri invoke)
-└── src-tauri/           # Rust backend
-    ├── Cargo.toml        # Rust dependencies
-    ├── tauri.conf.json   # Tauri config
-    └── src/
-        ├── main.rs       # Entry point
-        └── lib.rs        # HTTP request handler (reqwest)
-```
+## Why this exists
+I wanted a lightweight client that opens fast, uses little memory, and still feels pleasant to use. Tauri + Rust gives us native performance without the Electron tax.
 
 ## Features
+- All HTTP methods: GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS
+- Request builder: query params, headers, body (JSON/Text/Form), auth (Bearer, Basic, API Key)
+- Response viewer: formatted JSON, headers table, status/time/size stats, copy/format buttons, word wrap toggle
+- History stored locally (localStorage)
+- Keyboard shortcut: Enter to send
+- Dark theme UI
 
-- **All HTTP Methods** - GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS
-- **Request Builder**
-  - Query parameters editor
-  - Headers editor (key-value)
-  - JSON/Text/Form body
-  - Auth support (Bearer Token, Basic Auth, API Key)
-- **Response Viewer**
-  - Syntax-highlighted JSON
-  - Response headers table
-  - Status, time, size stats
-  - Copy & format buttons
-  - Word wrap toggle
-- **History** - Stored in localStorage, click to reload
-- **Keyboard Shortcuts** - Enter to send
-- **Dark Theme** - Purple accent, modern UI
+## Tech stack
+- Frontend: Vanilla HTML/CSS/JS
+- Backend: Rust + Tauri 2.x
+- HTTP: reqwest (async)
 
-## Tech Stack
+## Project structure
+```
+pigeon/
+├── package.json
+├── src/
+│   ├── index.html
+│   ├── styles.css
+│   └── app.js
+└── src-tauri/
+    ├── Cargo.toml
+    ├── tauri.conf.json
+    └── src/
+        ├── main.rs
+        └── lib.rs
+```
 
-- **Frontend**: Vanilla HTML/CSS/JS
-- **Backend**: Rust with Tauri 2.x
-- **HTTP Client**: reqwest (async)
-- **Icons**: Font Awesome 6
-
-## Build & Run
-
-### Prerequisites
+## Getting started
+### Prereqs
 - Node.js 18+
-- Rust (install via rustup)
-- System dependencies for Tauri (see below)
+- Rust via rustup
+- Tauri system deps
 
-### Ubuntu/Debian
+### Ubuntu/Debian deps
 ```bash
 sudo apt install libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
 ```
 
-### Development
+### Dev
 ```bash
 npm install
 npm run dev
 ```
 
-### Build for Release
+### Build
 ```bash
 npm run build
 ```
 
 Outputs:
-- Linux: `.deb`, `.AppImage` in `src-tauri/target/release/bundle/`
-- Windows: `.msi`, `.exe`
-- macOS: `.dmg`, `.app`
+- macOS: `src-tauri/target/release/bundle/macos/*.app` and `src-tauri/target/release/bundle/dmg/*.dmg`
+- Windows: `src-tauri/target/release/bundle/msi/` or `src-tauri/target/release/bundle/nsis/`
+- Linux: `src-tauri/target/release/bundle/deb/` and `src-tauri/target/release/bundle/appimage/`
 
-## Why Tauri?
+## Contributing
+Contributions are welcome, especially if you have a strong need for a feature. Open an issue and tell me your use case — if it solves a real pain, I’m happy to review PRs or collaborate on the design.
 
-- **Tiny binary** (~5-10MB vs 150MB+ Electron)
-- **Native performance** (Rust backend)
-- **Low memory** (~50MB vs 300MB+ Electron)
-- **System webview** (no bundled Chromium)
+If you just want to fix a bug or improve UI/UX, feel free to open a PR directly.
 
-## Customization
-
-### Theming
-Edit CSS variables in `src/styles.css`:
-```css
-:root {
-  --accent: #7c3aed;        /* Purple accent */
-  --bg-primary: #0f0f0f;    /* Dark background */
-  --method-get: #10b981;    /* Green for GET */
-  ...
-}
-```
-
-### Adding Features
-- Edit `src-tauri/src/lib.rs` for backend changes
-- Edit `src/app.js` for frontend logic
-- Call Rust from JS: `await invoke('command_name', { args })`
+---
+If you use Pigeon and it helps, a star on the repo means a lot.
