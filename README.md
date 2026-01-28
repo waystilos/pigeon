@@ -3,7 +3,7 @@
 Pigeon is a fast, native-feeling HTTP client (think Postman/Insomnia) built with Tauri. It’s focused on the basics: make requests quickly, inspect responses clearly, and stay out of your way.
 
 ## Why this exists
-I wanted a lightweight client that opens fast, uses little memory, and still feels pleasant to use. Tauri + Rust gives us native performance without the Electron tax.
+I wanted a lightweight client that opens fast, uses little memory, and still feels pleasant to use. 
 
 ## Features
 - All HTTP methods: GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS
