@@ -72,13 +72,6 @@ Outputs:
 - Windows: `.msi`, `.exe`
 - macOS: `.dmg`, `.app`
 
-## Why Tauri?
-
-- **Tiny binary** (~5-10MB vs 150MB+ Electron)
-- **Native performance** (Rust backend)
-- **Low memory** (~50MB vs 300MB+ Electron)
-- **System webview** (no bundled Chromium)
-
 ## Customization
 
 ### Theming
